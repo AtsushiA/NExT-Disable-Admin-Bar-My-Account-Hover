@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<ruleset name="NExT Disable Admin Bar Hover">
+    <description>Coding standards for NExT Disable Admin Bar Hover</description>
+
+    <!-- Target files -->
+    <file>./disable-adminbar-hover.php</file>
+
+    <!-- Exclusions -->
+    <exclude-pattern>./vendor/*</exclude-pattern>
+    <exclude-pattern>./node_modules/*</exclude-pattern>
+    <exclude-pattern>./tests/*</exclude-pattern>
+    <exclude-pattern>./bin/*</exclude-pattern>
+
+    <!-- WordPress Coding Standards -->
+    <rule ref="WordPress">
+        <!-- メインプラグインファイルはWordPressのプラグインスラッグに従う命名のため除外 -->
+        <exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
+    </rule>
+
+    <!-- PHP Compatibility -->
+    <rule ref="PHPCompatibilityWP"/>
+
+    <!-- PHP version range -->
+    <config name="testVersion" value="8.3-"/>
+
+    <!-- Text domain -->
+    <config name="text_domain" value="disable-adminbar-my-account-hover"/>
+
+    <!-- Prefix -->
+    <config name="prefixes" value="disable_adminbar"/>
+    <config name="minimum_wp_version" value="6.5"/>
+</ruleset>

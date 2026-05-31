@@ -1,34 +1,73 @@
-name: Release Plugin ZIP
+name: Release
 
 on:
   push:
     tags:
-      - 'v*'
+      - 'v[0-9]+.[0-9]+.[0-9]+'
+
+permissions:
+  contents: write
 
 jobs:
   release:
+    name: Create Release
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Get version from tag
-        id: version
-        run: echo "VERSION=${GITHUB_REF_NAME#v}" >> $GITHUB_OUTPUT
-
-      - name: Create plugin ZIP
+      - name: Get plugin metadata
+        id: meta
         run: |
-          mkdir -p /tmp/next-disable-adminbar-hover
-          rsync -av --exclude='.git' --exclude='.github' . /tmp/next-disable-adminbar-hover/
-          cd /tmp
-          zip -r $GITHUB_WORKSPACE/next-disable-adminbar-hover-${{ steps.version.outputs.VERSION }}.zip next-disable-adminbar-hover
+          PLUGIN_SLUG=$(basename "$(pwd)")
+          VERSION="${GITHUB_REF_NAME#v}"
+          echo "slug=${PLUGIN_SLUG}" >> "$GITHUB_OUTPUT"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Verify version in plugin header
+        env:
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          HEADER_VERSION=$(grep -oP 'Version:\s*\K[0-9]+\.[0-9]+\.[0-9]+' disable-adminbar-hover.php)
+          if [ "$HEADER_VERSION" != "$VERSION" ]; then
+            echo "::error::Tag version ($VERSION) does not match plugin header version ($HEADER_VERSION)"
+            exit 1
+          fi
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          tools: composer
+
+      - run: composer install --no-dev --no-interaction --optimize-autoloader
+
+      - name: Create plugin zip
+        env:
+          SLUG: ${{ steps.meta.outputs.slug }}
+          VERSION: ${{ steps.meta.outputs.version }}
+        run: |
+          rsync -av \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='.husky' \
+            --exclude='node_modules' \
+            --exclude='tests' \
+            --exclude='.wp-env.json' \
+            --exclude='.wp-env.override.json' \
+            --exclude='package.json' \
+            --exclude='package-lock.json' \
+            --exclude='composer.lock' \
+            --exclude='phpcs.xml.dist' \
+            --exclude='phpunit.xml.dist' \
+            --exclude='playwright.config.ts' \
+            --exclude='.gitignore' \
+            --exclude='debug.log' \
+            --exclude='db.sql' \
+            ./ "${SLUG}/"
+          zip -r "${SLUG}-${VERSION}.zip" "${SLUG}/"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          name: v${{ steps.version.outputs.VERSION }}
-          files: next-disable-adminbar-hover-${{ steps.version.outputs.VERSION }}.zip
+          name: v${{ steps.meta.outputs.version }}
+          files: ${{ steps.meta.outputs.slug }}-${{ steps.meta.outputs.version }}.zip
           generate_release_notes: true
