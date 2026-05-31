@@ -42,7 +42,11 @@ else
 		echo "Latest WordPress version could not be found"
 		exit 1
 	fi
-	WP_TESTS_TAG="tags/wordpress-$LATEST_VERSION"
+	if [[ "$LATEST_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
+		WP_TESTS_TAG="branches/wordpress-$LATEST_VERSION"
+	else
+		WP_TESTS_TAG="tags/wordpress-$LATEST_VERSION"
+	fi
 fi
 set -ex
 
