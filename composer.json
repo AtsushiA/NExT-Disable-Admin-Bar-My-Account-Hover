@@ -9,7 +9,8 @@
     "wp-coding-standards/wpcs": "^3",
     "phpcompatibility/phpcompatibility-wp": "*",
     "dealerdirect/phpcodesniffer-composer-installer": "^1",
-    "yoast/wp-test-utils": "^1"
+    "yoast/wp-test-utils": "^1",
+    "doctrine/instantiator": ">=1.5.0 <2.1.0"
   },
   "autoload-dev": {
     "psr-4": {
