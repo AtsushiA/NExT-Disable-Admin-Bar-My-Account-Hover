@@ -60,7 +60,9 @@ jobs:
           rm -rf vendor
           composer install --no-interaction
       - name: Install WordPress test suite
-        run: bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wp }} true
+        run: |
+          sudo apt-get install -y subversion
+          bash bin/install-wp-tests.sh wordpress_test root root 127.0.0.1 ${{ matrix.wp }} true
       - name: Run PHPUnit
         env:
           WP_TESTS_DIR: /tmp/wordpress-tests-lib
@@ -71,15 +73,27 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: wordpress/plugin-check-action@v1
+      - uses: actions/setup-node@v4
         with:
-          exclude-directories: 'vendor,tests,node_modules'
-          categories: |
-            general
-            performance
-            accessibility
-            security
-          ignore-warnings: true
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Add plugin-check and start wp-env
+        run: |
+          node -e "
+            const fs = require('fs');
+            const c = JSON.parse(fs.readFileSync('.wp-env.json', 'utf8'));
+            c.plugins.push('https://downloads.wordpress.org/plugin/plugin-check.zip');
+            fs.writeFileSync('.wp-env.json', JSON.stringify(c, null, 2));
+          "
+          npx wp-env start
+      - name: Run Plugin Check
+        run: |
+          PLUGIN_SLUG=$(basename "$PWD")
+          npx wp-env run cli wp plugin check "$PLUGIN_SLUG" \
+            --categories=general,performance,accessibility,security \
+            --exclude-directories=vendor,tests,node_modules \
+            --ignore-warnings
 
   e2e:
     name: E2E Tests
