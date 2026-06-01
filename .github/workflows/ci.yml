@@ -59,6 +59,8 @@ jobs:
         run: |
           rm -rf vendor
           composer install --no-interaction
+      - name: Create test database
+        run: mysqladmin create wordpress_test -u root -proot -h 127.0.0.1
       - name: Install WordPress test suite
         run: |
           sudo apt-get install -y subversion
