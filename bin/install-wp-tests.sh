@@ -26,12 +26,12 @@ download() {
 }
 
 if [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+$ ]]; then
-	WP_TESTS_TAG="branches/wordpress-$WP_VERSION"
+	WP_TESTS_TAG="branches/$WP_VERSION"
 elif [[ $WP_VERSION =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
 	if [[ $WP_VERSION =~ [0-9]+\.[0-9]+\.[0] ]]; then
-		WP_TESTS_TAG="tags/wordpress-${WP_VERSION%??}"
+		WP_TESTS_TAG="tags/${WP_VERSION%??}"
 	else
-		WP_TESTS_TAG="tags/wordpress-$WP_VERSION"
+		WP_TESTS_TAG="tags/$WP_VERSION"
 	fi
 elif [[ $WP_VERSION == 'nightly' || $WP_VERSION == 'trunk' ]]; then
 	WP_TESTS_TAG="trunk"
@@ -43,9 +43,9 @@ else
 		exit 1
 	fi
 	if [[ "$LATEST_VERSION" =~ ^[0-9]+\.[0-9]+$ ]]; then
-		WP_TESTS_TAG="branches/wordpress-$LATEST_VERSION"
+		WP_TESTS_TAG="branches/$LATEST_VERSION"
 	else
-		WP_TESTS_TAG="tags/wordpress-$LATEST_VERSION"
+		WP_TESTS_TAG="tags/$LATEST_VERSION"
 	fi
 fi
 set -ex
