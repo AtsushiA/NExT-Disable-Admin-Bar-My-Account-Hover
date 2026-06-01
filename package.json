@@ -1,0 +1,21 @@
+{
+  "name": "next-disable-adminbar-hover",
+  "version": "1.1.1",
+  "description": "アドミンバーのトップセカンダリメニューのマウスオーバー機能を無効化するWordPressプラグイン",
+  "private": true,
+  "scripts": {
+    "prepare": "husky",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1",
+    "@wordpress/e2e-test-utils-playwright": "^1",
+    "@wordpress/env": "^10",
+    "husky": "^9",
+    "lint-staged": "^15"
+  },
+  "lint-staged": {
+    "*.php": "composer run phpcs --"
+  }
+}
