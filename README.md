@@ -1,5 +1,7 @@
 # NExT Disable Admin Bar Hover
 
+[![Try in WordPress Playground](https://img.shields.io/badge/Try%20in-WordPress%20Playground-3858e9?logo=wordpress)](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/AtsushiA/NExT-Disable-Admin-Bar-My-Account-Hover/main/blueprint.json)
+
 WordPressのアドミンバーのトップセカンダリメニュー（`#wp-admin-bar-top-secondary`）のマウスオーバー機能を無効化するプラグインです。
 
 ## 概要
